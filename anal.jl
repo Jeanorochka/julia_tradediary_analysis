@@ -638,12 +638,12 @@ end
 
 function projection_json(proj, horizon_days::Int)
     Dict(
-        "horizon_trading_days" => horizon_days,
-        "point_estimate" => json_safe(proj.point),
-        "bootstrap_p05" => json_safe(proj.p05),
-        "bootstrap_median" => json_safe(proj.median),
-        "bootstrap_p95" => json_safe(proj.p95),
-        "probability_profit" => json_safe(proj.probability_profit),
+        "горизонт_в_торговых_днях" => horizon_days,
+        "точечная_оценка" => json_safe(proj.point),
+        "бутстрэп_05_процентиль" => json_safe(proj.p05),
+        "бутстрэп_медиана" => json_safe(proj.median),
+        "бутстрэп_95_процентиль" => json_safe(proj.p95),
+        "вероятность_прибыли" => json_safe(proj.probability_profit),
     )
 end
 
@@ -664,90 +664,90 @@ function save_json_report(
     max_drawdown_pct = isempty(valid_dd_pct) ? nothing : minimum(valid_dd_pct)
 
     report = Dict(
-        "meta" => Dict(
-            "generated_at" => Dates.format(now(), dateformat"yyyy-mm-ddTHH:MM:SS"),
-            "source_files" => basename.(files),
-            "source_file_count" => length(files),
-            "period_from" => string(minimum(daily.date)),
-            "period_to" => string(maximum(daily.date)),
-            "sample_weekdays" => sample_days,
-            "starting_capital" => starting_capital,
-            "deduplicate_exact_rows" => DEDUPLICATE_EXACT_ROWS,
+        "метаданные" => Dict(
+            "сформировано" => Dates.format(now(), dateformat"yyyy-mm-ddTHH:MM:SS"),
+            "исходные_файлы" => basename.(files),
+            "количество_исходных_файлов" => length(files),
+            "период_с" => string(minimum(daily.date)),
+            "период_по" => string(maximum(daily.date)),
+            "будних_дней_в_выборке" => sample_days,
+            "стартовый_капитал" => starting_capital,
+            "удалять_точные_дубликаты" => DEDUPLICATE_EXACT_ROWS,
         ),
-        "summary" => Dict(
-            "trades" => metrics.trades,
-            "wins" => metrics.wins,
-            "losses" => metrics.losses,
-            "breakeven_trades" => metrics.breakeven,
-            "win_rate" => json_safe(metrics.win_rate),
-            "gross_pnl" => json_safe(metrics.gross_pnl),
-            "commissions" => json_safe(metrics.commissions),
-            "net_pnl" => json_safe(metrics.net_pnl),
-            "avg_trade" => json_safe(metrics.avg_trade),
-            "avg_win" => json_safe(metrics.avg_win),
-            "avg_loss" => json_safe(metrics.avg_loss),
-            "payoff_ratio" => json_safe(metrics.payoff_ratio),
-            "profit_factor" => json_safe(metrics.profit_factor),
-            "best_trade" => json_safe(metrics.best_trade),
-            "worst_trade" => json_safe(metrics.worst_trade),
-            "max_win_streak" => metrics.max_win_streak,
-            "max_loss_streak" => metrics.max_loss_streak,
-            "commission_load" => json_safe(metrics.commission_load),
-            "max_drawdown" => json_safe(minimum(daily.drawdown)),
-            "max_drawdown_pct" => json_safe(max_drawdown_pct),
-            "roi_total" => starting_capital === nothing ? nothing : json_safe(metrics.net_pnl / starting_capital),
+        "сводка" => Dict(
+            "всего_сделок" => metrics.trades,
+            "прибыльных_сделок" => metrics.wins,
+            "убыточных_сделок" => metrics.losses,
+            "безубыточных_сделок" => metrics.breakeven,
+            "доля_прибыльных_сделок" => json_safe(metrics.win_rate),
+            "валовой_финрез" => json_safe(metrics.gross_pnl),
+            "комиссии" => json_safe(metrics.commissions),
+            "чистый_финрез" => json_safe(metrics.net_pnl),
+            "средний_финрез_сделки" => json_safe(metrics.avg_trade),
+            "средняя_прибыльная_сделка" => json_safe(metrics.avg_win),
+            "средняя_убыточная_сделка" => json_safe(metrics.avg_loss),
+            "отношение_средней_прибыли_к_среднему_убытку" => json_safe(metrics.payoff_ratio),
+            "профит_фактор" => json_safe(metrics.profit_factor),
+            "лучшая_сделка" => json_safe(metrics.best_trade),
+            "худшая_сделка" => json_safe(metrics.worst_trade),
+            "максимальная_серия_прибыльных_сделок" => metrics.max_win_streak,
+            "максимальная_серия_убыточных_сделок" => metrics.max_loss_streak,
+            "доля_комиссий" => json_safe(metrics.commission_load),
+            "максимальная_просадка" => json_safe(minimum(daily.drawdown)),
+            "максимальная_просадка_в_долях" => json_safe(max_drawdown_pct),
+            "общая_доходность" => starting_capital === nothing ? nothing : json_safe(metrics.net_pnl / starting_capital),
         ),
-        "daily_risk" => Dict(
-            "avg_daily_pnl" => json_safe(risk.avg_daily_pnl),
-            "daily_pnl_std" => json_safe(risk.daily_std),
-            "sharpe_like" => json_safe(risk.sharpe_like),
-            "sortino_like" => json_safe(risk.sortino_like),
-            "avg_daily_roi" => json_safe(risk.avg_daily_roi),
+        "дневные_метрики_риска" => Dict(
+            "средний_финрез_за_день" => json_safe(risk.avg_daily_pnl),
+            "стандартное_отклонение_дневного_финреза" => json_safe(risk.daily_std),
+            "коэффициент_Шарпа_приближенный" => json_safe(risk.sharpe_like),
+            "коэффициент_Сортино_приближенный" => json_safe(risk.sortino_like),
+            "средняя_дневная_доходность" => json_safe(risk.avg_daily_roi),
         ),
-        "projections" => Dict(
-            "month" => projection_json(month_proj, 21),
-            "year" => projection_json(year_proj, 252),
-            "method" => "bootstrap resampling of historical weekday P&L",
-            "simulations" => 20_000,
-            "position_sizing" => "constant",
+        "прогнозы" => Dict(
+            "месяц" => projection_json(month_proj, 21),
+            "год" => projection_json(year_proj, 252),
+            "метод" => "бутстрэп-перевыборка исторического дневного финреза",
+            "количество_симуляций" => 20_000,
+            "размер_позиции" => "постоянный",
         ),
-        "by_ticker" => [
+        "по_тикерам" => [
             Dict(
-                "ticker" => row.ticker,
-                "trades" => row.trades,
-                "win_rate" => json_safe(row.win_rate),
-                "gross_pnl" => json_safe(row.gross_pnl),
-                "commission" => json_safe(row.commission),
-                "net_pnl" => json_safe(row.net_pnl),
-                "avg_trade" => json_safe(row.avg_trade),
-                "profit_factor" => json_safe(row.profit_factor),
+                "тикер" => row.ticker,
+                "сделок" => row.trades,
+                "доля_прибыльных_сделок" => json_safe(row.win_rate),
+                "валовой_финрез" => json_safe(row.gross_pnl),
+                "комиссия" => json_safe(row.commission),
+                "чистый_финрез" => json_safe(row.net_pnl),
+                "средний_финрез_сделки" => json_safe(row.avg_trade),
+                "профит_фактор" => json_safe(row.profit_factor),
             )
             for row in eachrow(by_ticker)
         ],
-        "daily" => [
+        "по_дням" => [
             Dict(
-                "date" => string(row.date),
-                "trades" => row.trades,
-                "gross_pnl" => json_safe(row.gross_pnl),
-                "commission" => json_safe(row.commission),
-                "net_pnl" => json_safe(row.net_pnl),
-                "cum_net" => json_safe(row.cum_net),
-                "equity" => json_safe(row.equity),
-                "drawdown" => json_safe(row.drawdown),
-                "drawdown_pct" => json_safe(row.drawdown_pct),
+                "дата" => string(row.date),
+                "сделок" => row.trades,
+                "валовой_финрез" => json_safe(row.gross_pnl),
+                "комиссия" => json_safe(row.commission),
+                "чистый_финрез" => json_safe(row.net_pnl),
+                "накопленный_чистый_финрез" => json_safe(row.cum_net),
+                "капитал" => json_safe(row.equity),
+                "просадка" => json_safe(row.drawdown),
+                "просадка_в_долях" => json_safe(row.drawdown_pct),
             )
             for row in eachrow(daily)
         ],
-        "trades" => [
+        "сделки" => [
             Dict(
-                "date" => string(row.date),
-                "ticker" => row.ticker,
-                "entry_price" => json_safe(row.entry_price),
-                "exit_price" => json_safe(row.exit_price),
-                "gross_pnl" => json_safe(row.gross_pnl),
-                "commission" => json_safe(row.commission),
-                "net_pnl" => json_safe(row.net_pnl),
-                "source_file" => row.source_file,
+                "дата" => string(row.date),
+                "тикер" => row.ticker,
+                "цена_входа" => json_safe(row.entry_price),
+                "цена_выхода" => json_safe(row.exit_price),
+                "валовой_финрез" => json_safe(row.gross_pnl),
+                "комиссия" => json_safe(row.commission),
+                "чистый_финрез" => json_safe(row.net_pnl),
+                "исходный_файл" => row.source_file,
             )
             for row in eachrow(df)
         ],
@@ -755,7 +755,7 @@ function save_json_report(
 
     json_path = joinpath(output_dir, "report.json")
     open(json_path, "w") do io
-        JSON3.write(io, report)
+        JSON3.pretty(io, JSON3.write(report))
         println(io)
     end
     return json_path
