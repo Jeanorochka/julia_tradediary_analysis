@@ -7,7 +7,11 @@
 ```bash
 julia -e "import Pkg; Pkg.add([\"XLSX\", \"DataFrames\", \"Plots\", \"JSON3\"])"
 ```
+## Для анализа и экстраполяции дневника:
 
+```bash
+https://github.com/Jeanorochka/julia_tradediary_analysis
+```
 Пайплайн:
 
 1. Python выгружает сделки брокера в Excel.
