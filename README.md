@@ -7,7 +7,7 @@
 ```bash
 julia -e "import Pkg; Pkg.add([\"XLSX\", \"DataFrames\", \"Plots\", \"JSON3\"])"
 ```
-## Для анализа и экстраполяции дневника:
+## Для анализа дневника и моделирования доходности:
 
 ```bash
 https://github.com/Jeanorochka/julia_tradediary_analysis
