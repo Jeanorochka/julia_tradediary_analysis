@@ -2,8 +2,11 @@
 
 Небольшой локальный инструмент для анализа торгового дневника https://github.com/Jeanorochka/moex-trade-diary
 
-Requirements:
+## Requirements
+
+```bash
 julia -e "import Pkg; Pkg.add([\"XLSX\", \"DataFrames\", \"Plots\", \"JSON3\"])"
+```
 
 Пайплайн:
 
