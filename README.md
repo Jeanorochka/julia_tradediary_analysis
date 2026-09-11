@@ -1,18 +1,15 @@
 # Trade Diary Analytics
 
-Небольшой локальный инструмент для анализа торгового дневника https://github.com/Jeanorochka/moex-trade-diary
-
+Небольшой локальный инструмент для анализа торгового дневника 
+```bash
+https://github.com/Jeanorochka/moex-trade-diary
+```
 ## Requirements
 
 ```bash
 julia -e "import Pkg; Pkg.add([\"XLSX\", \"DataFrames\", \"Plots\", \"JSON3\"])"
 ```
 ## Для анализа дневника и моделирования доходности :
-
-```bash
-https://github.com/Jeanorochka/julia_tradediary_analysis
-```
-Пайплайн:
 
 1. Python выгружает сделки брокера в Excel.
 2. Julia читает все `.xlsx` из папки `exports/`.
